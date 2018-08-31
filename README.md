@@ -1,4 +1,4 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/92rb6muqvqw5t6xf?svg=true)](https://ci.appveyor.com/project/GrumpyBusted/grumpy-dacpacmerge)
+[![Build status](https://ci.appveyor.com/api/projects/status/yb22aa3i133kj54e?svg=true)](https://ci.appveyor.com/project/GrumpyBusted/grumpy-dacpacmerge)
 [![codecov](https://codecov.io/gh/GrumpyBusted/Grumpy.DacpacMerge/branch/master/graph/badge.svg)](https://codecov.io/gh/GrumpyBusted/Grumpy.DacpacMerge)
 [![nuget](https://img.shields.io/nuget/v/Grumpy.DacpacMerge.svg)](https://www.nuget.org/packages/Grumpy.DacpacMerge/)
 [![downloads](https://img.shields.io/nuget/dt/Grumpy.DacpacMerge.svg)](https://www.nuget.org/packages/Grumpy.DacpacMerge/)

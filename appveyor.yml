@@ -27,7 +27,7 @@ after_test:
   - ps: |
       $env:PATH = 'C:\msys64\usr\bin;' + $env:PATH
       Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
-      bash codecov.sh -f "coverage.xml" -t c5001df3-6360-43c5-90b8-86ad45d57c82
+      bash codecov.sh -f "coverage.xml" -t 502e368a-6011-4c87-9f61-e67cc5a9b6ac
 after_build:
   - ps: nuget pack Grumpy.DacpacMerge\bin\Release\Grumpy.DacpacMerge.nuspec -Version $env:APPVEYOR_BUILD_VERSION
 artifacts:
