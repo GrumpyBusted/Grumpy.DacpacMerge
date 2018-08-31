@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace Grumpy.DacpacMerge.UnitTests
+namespace Grumpy.DacpacMerge.IntegrationTests
 {
     public class DacpacMergeServiceTests
     {
