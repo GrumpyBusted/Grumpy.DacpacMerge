@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+    <metadata>
+        <id>Grumpy.DacpacMerge</id>
+        <version>0</version>
+        <title>Grumpy.DacpacMerge</title>
+        <description>Library for merging a Database Package file (dacpac) with and existing database</description>
+        <summary>This library includes a tool for helping to deploy single SQL Schemas to existing MS-SQL Databases. The standard dacpac deploy using SQL-Package and SSDT Toolkit only support deploying whole databases. In some enterprises multiple logical databases are created in the same MS-SQL Databases with different schemas, for different reasons, some good and some not so good.</summary>
+        <tags>dacpac mssql schema database deployment</tags>
+        <authors>Anders Busted-Janum</authors>
+        <owners>GrumpyBusted</owners>
+        <projectUrl>https://github.com/GrumpyBusted/Grumpy.DacpacMerge</projectUrl>
+        <licenseUrl>https://github.com/GrumpyBusted/Grumpy.DacpacMerge/blob/master/LICENSE</licenseUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <language>en-US</language>
+        <copyright>Copyright © Busted-Janum 2018</copyright>
+    </metadata>
+    <files>
+        <file src="Grumpy.DacpacMerge.dll" target="lib\net451" />
+        <file src="Grumpy.DacpacMerge.pdb" target="lib\net451" />
+    </files>
+</package>
