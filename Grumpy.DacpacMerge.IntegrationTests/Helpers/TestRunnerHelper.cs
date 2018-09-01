@@ -23,11 +23,9 @@ namespace Grumpy.DacpacMerge.IntegrationTests.Helpers
             var inputFile = string.Format(DacpacLocation, testDatabase);
 
             var logger = NullLogger.Instance;
-            var modelFactory = new ModelFactory(logger);
-            var packageFactory = new PackageFactory(logger, modelFactory);
-            var service = new DacpacMergeService(logger, packageFactory, modelFactory);
+            var service = new DacpacMergeServiceBuilder(logger).Build();
 
-            service.Build(inputFile, DatabaseHelper.DatabaseSource, databaseName, databaseSchemas != "" ? databaseSchemas.Split(';') : new string[] { }, "TestUser", fileName);
+            service.Merge(inputFile, DatabaseHelper.DatabaseSource, databaseName, databaseSchemas != "" ? databaseSchemas.Split(';') : new string[] { }, "TestUser", fileName);
 
             PublishResult result;
 

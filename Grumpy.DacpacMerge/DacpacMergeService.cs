@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Grumpy.Common.Extensions;
+﻿using Grumpy.Common.Extensions;
 using Grumpy.DacpacMerge.Interfaces;
 using Grumpy.Logging;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Grumpy.DacpacMerge
 {
-    public class DacpacMergeService
+    public class DacpacMergeService : IDacpacMergeService
     {
         private readonly ILogger _logger;
         private readonly IPackageFactory _packageFactory;
@@ -20,9 +20,9 @@ namespace Grumpy.DacpacMerge
             _modelFactory = modelFactory;
         }
 
-        public void Build(string inputDacpacFileName, string databaseSource, string databaseName, IEnumerable<string> databaseSchemas, string schemaOwnerUser, string outputDacpacFileName)
+        public void Merge(string inputDacpacFileName, string databaseSource, string databaseName, IEnumerable<string> databaseSchemas = null, string schemaOwnerUser = null, string outputDacpacFileName = null)
         {
-            var schemas = databaseSchemas as string[] ?? databaseSchemas.ToArray();
+            var schemas = databaseSchemas as string[] ?? databaseSchemas?.ToArray() ?? new string[] { };
 
             using (var package = _packageFactory.Create(inputDacpacFileName))
             {
@@ -48,7 +48,7 @@ namespace Grumpy.DacpacMerge
                     databaseModel.AddObjects(deployObjects, schemaOwnerUser);
 
                     package.Model = databaseModel;
-                    package.Save(outputDacpacFileName);
+                    package.Save(outputDacpacFileName ?? inputDacpacFileName);
                 }
             }
         }

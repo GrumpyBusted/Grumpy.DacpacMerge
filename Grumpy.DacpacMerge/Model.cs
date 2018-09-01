@@ -47,7 +47,7 @@ namespace Grumpy.DacpacMerge
             {
                 if (obj.TryGetScript(out var script))
                 {
-                    if (obj.IsSchema() && script.Contains("[dbo]") && schemaOwnerUser.ToLower(CultureInfo.InvariantCulture) != "dbo")
+                    if (obj.IsSchema() && script.Contains("[dbo]") && (schemaOwnerUser ?? "dbo").ToLower(CultureInfo.InvariantCulture) != "dbo")
                         script = script.Replace("[dbo]", $"[{schemaOwnerUser}]");
 
                     if (!obj.Name.HasName || !names.Contains(obj.Name.ToString()))

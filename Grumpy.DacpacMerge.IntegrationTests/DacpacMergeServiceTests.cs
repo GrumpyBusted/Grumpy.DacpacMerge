@@ -1,10 +1,13 @@
-﻿using System;
-using System.IO;
-using ApprovalTests;
+﻿using ApprovalTests;
 using ApprovalTests.Namers;
 using ApprovalTests.Reporters;
+using FluentAssertions;
 using Grumpy.DacpacMerge.IntegrationTests.Helpers;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.SqlServer.Dac;
+using System;
+using System.IO;
+using System.Text;
 using Xunit;
 
 namespace Grumpy.DacpacMerge.IntegrationTests
@@ -41,7 +44,7 @@ namespace Grumpy.DacpacMerge.IntegrationTests
         [Fact]
         public void ApplyNewSchemaToEmptyDatabase_ShouldCreateNewSchema()
         {
-            DeployDacpac("Database1");
+            DatabaseHelper.DeployDacpac("Database1", _databaseName);
 
             var script = TestRunnerHelper.ExecuteTest("Database3", "SchemaB", _databaseName);
 
@@ -51,7 +54,7 @@ namespace Grumpy.DacpacMerge.IntegrationTests
         [Fact]
         public void ApplySameDefinition_ShouldNotAlterDatabase()
         {
-            DeployDacpac("Database2");
+            DatabaseHelper.DeployDacpac("Database2", _databaseName);
 
             var script = TestRunnerHelper.ExecuteTest("Database2", "SchemaA", _databaseName);
 
@@ -61,7 +64,7 @@ namespace Grumpy.DacpacMerge.IntegrationTests
         [Fact]
         public void ApplyNewSchemaToExistingDatabase_ShouldCreateNewSchema()
         {
-            DeployDacpac("Database2");
+            DatabaseHelper.DeployDacpac("Database2", _databaseName);
 
             var script = TestRunnerHelper.ExecuteTest("Database3", "SchemaB", _databaseName);
 
@@ -71,7 +74,7 @@ namespace Grumpy.DacpacMerge.IntegrationTests
         [Fact]
         public void ApplyWithChangedTable_ShouldAlterTable()
         {
-            DeployDacpac("Database2");
+            DatabaseHelper.DeployDacpac("Database2", _databaseName);
 
             var script = TestRunnerHelper.ExecuteTest("Database4", "SchemaA", _databaseName);
 
@@ -81,7 +84,7 @@ namespace Grumpy.DacpacMerge.IntegrationTests
         [Fact]
         public void ApplyWithPostDeploymentScript_ShouldAddPostDeployScript()
         {
-            DeployDacpac("Database2");
+            DatabaseHelper.DeployDacpac("Database2", _databaseName);
 
             var script = TestRunnerHelper.ExecuteTest("Database5", "SchemaA", _databaseName);
 
@@ -91,7 +94,7 @@ namespace Grumpy.DacpacMerge.IntegrationTests
         [Fact]
         public void ApplyWithFunction_ShouldAddFunction()
         {
-            DeployDacpac("Database2");
+            DatabaseHelper.DeployDacpac("Database2", _databaseName);
 
             var script = TestRunnerHelper.ExecuteTest("Database7", "SchemaA", _databaseName);
 
@@ -101,7 +104,7 @@ namespace Grumpy.DacpacMerge.IntegrationTests
         [Fact]
         public void ApplyWithRole_ShouldAddRole()
         {
-            DeployDacpac("Database2");
+            DatabaseHelper.DeployDacpac("Database2", _databaseName);
 
             var script = TestRunnerHelper.ExecuteTest("Database8", "SchemaA", _databaseName);
 
@@ -111,7 +114,7 @@ namespace Grumpy.DacpacMerge.IntegrationTests
         [Fact]
         public void ApplyMultipleSchemas_ShouldChangeBothSchemas()
         {
-            DeployDacpac("Database2");
+            DatabaseHelper.DeployDacpac("Database2", _databaseName);
 
             var script = TestRunnerHelper.ExecuteTest("Database6", "SchemaA;SchemaC", _databaseName);
 
@@ -121,7 +124,7 @@ namespace Grumpy.DacpacMerge.IntegrationTests
         [Fact]
         public void ApplyAllSchemas_ShouldChangeBothSchemas()
         {
-            DeployDacpac("Database2");
+            DatabaseHelper.DeployDacpac("Database2", _databaseName);
 
             var script = TestRunnerHelper.ExecuteTest("Database6", "", _databaseName);
 
@@ -131,22 +134,41 @@ namespace Grumpy.DacpacMerge.IntegrationTests
         [Fact]
         public void ApplyWithChangedItemOutsideSchema_ShouldChangeItem()
         {
-            DeployDacpac("Database2");
+            DatabaseHelper.DeployDacpac("Database2", _databaseName);
 
             var script = TestRunnerHelper.ExecuteTest("Database9", "SchemaA", _databaseName);
 
             Approvals.Verify(script);
         }
 
-        private void DeployDacpac(string testDatabase)
+        [Fact]
+        public void TestDefaultArguments()
         {
-            var dacpacFile = string.Format(TestRunnerHelper.DacpacLocation, testDatabase);
+            var dacpacFile = $"Test_{Guid.NewGuid().ToString()}.dacpac";
 
-            using (var package = DacPackage.Load(dacpacFile, DacSchemaModelStorageType.Memory, FileAccess.Read))
+            try
             {
-                var service = new DacServices(DatabaseHelper.ConnectionString(_databaseName));
+                DatabaseHelper.DeployDacpac("Database1", _databaseName);
+                var logger = NullLogger.Instance;
+                var modelFactory = new ModelFactory(logger);
+                var packageFactory = new PackageFactory(logger, modelFactory);
+                var service = new DacpacMergeService(logger, packageFactory, modelFactory);
+                var inputFile = string.Format(TestRunnerHelper.DacpacLocation, "Database3");
+                File.Copy(inputFile, dacpacFile);
 
-                service.Deploy(package, _databaseName);
+                service.Merge(dacpacFile, DatabaseHelper.DatabaseSource, _databaseName);
+
+                using (var package = System.IO.Packaging.Package.Open(dacpacFile, FileMode.Open, FileAccess.Read))
+                {
+                    using (var reader = new StreamReader(package.GetPart(new Uri("/model.xml", UriKind.Relative)).GetStream(FileMode.Open), Encoding.UTF8))
+                    {
+                        reader.ReadToEnd().Should().Contain("<Element Type=\"SqlSchema\" Name=\"[SchemaB]\">");
+                    }
+                }
+            }
+            finally 
+            {
+                File.Delete(dacpacFile);
             }
         }
     }

@@ -1,11 +1,25 @@
 ﻿using System.Data.SqlClient;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using Microsoft.SqlServer.Dac;
 
 namespace Grumpy.DacpacMerge.IntegrationTests.Helpers
 {
     internal static class DatabaseHelper
     {
         public const string DatabaseSource = @"(localdb)\MSSQLLocalDB";
+        
+        public static void DeployDacpac(string testDatabase, string databaseName)
+        {
+            var dacpacFile = string.Format(TestRunnerHelper.DacpacLocation, testDatabase);
+
+            using (var package = DacPackage.Load(dacpacFile, DacSchemaModelStorageType.Memory, FileAccess.Read))
+            {
+                var service = new DacServices(ConnectionString(databaseName));
+
+                service.Deploy(package, databaseName);
+            }
+        }
 
         public static string ConnectionString(string databaseName)
         {

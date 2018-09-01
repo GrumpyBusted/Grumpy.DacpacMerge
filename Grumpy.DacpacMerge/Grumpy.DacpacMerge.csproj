@@ -38,6 +38,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DacpacMergeServiceBuilder.cs" />
+    <Compile Include="Interfaces\IDacpacMergeService.cs" />
     <Compile Include="Interfaces\IModel.cs" />
     <Compile Include="Interfaces\IModelFactory.cs" />
     <Compile Include="Interfaces\IPackage.cs" />
