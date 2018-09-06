@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Globalization;
-using System.Linq;
-using Grumpy.Common.Extensions;
+﻿using Grumpy.Common.Extensions;
 using Grumpy.DacpacMerge.Extensions;
 using Grumpy.DacpacMerge.Interfaces;
 using Grumpy.Logging;
 using Microsoft.Extensions.Logging;
 using Microsoft.SqlServer.Dac.Model;
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Globalization;
+using System.Linq;
 
 namespace Grumpy.DacpacMerge
 {
@@ -59,7 +59,7 @@ namespace Grumpy.DacpacMerge
                     }
                 }
                 else
-                    _logger.Debug("Unable to get script from SQL object {@SqlObject}", obj);
+                    _logger.Debug("AddObjects - Unable to get script from SQL object {Name} {Type}", obj.Name, obj.ObjectType.Name);
             }
         }
 
@@ -73,7 +73,7 @@ namespace Grumpy.DacpacMerge
                 if (obj.TryGetScript(out var script))
                     newModel.AddObjects(script);
                 else
-                    _logger.Debug("Unable to get script from SQL object {@SqlObject}", obj);
+                    _logger.Debug("Remove - Unable to get script from SQL object {Name} {Type}", obj.Name, obj.ObjectType.Name);
             }
 
             lock (SqlModel)
@@ -83,7 +83,7 @@ namespace Grumpy.DacpacMerge
             }
         }
 
-        public IEnumerable<string> Schemas => 
+        public IEnumerable<string> Schemas =>
             SqlModel
                 .GetObjects(DacQueryScopes.UserDefined)
                 .Where(o => o.IsSchema())
@@ -93,9 +93,10 @@ namespace Grumpy.DacpacMerge
         {
             return SqlModel
                 .GetObjects(DacQueryScopes.UserDefined)
-                .Where(o => !o.IsDatabaseOptions() && (
-                                includeObjectOutsideSchemas == o.SchemaName().NullOrEmpty() ||
-                                databaseSchemas.Any(s => string.Equals(s, o.SchemaName(), StringComparison.InvariantCultureIgnoreCase))));
+                .Where(o => !o.IsDatabaseOptions() && 
+                            (includeObjectOutsideSchemas && 
+                             o.SchemaName().NullOrEmpty() ||
+                             databaseSchemas.Contains(o.SchemaName(), StringComparer.InvariantCultureIgnoreCase)));
         }
 
         public TSqlObject GetUser(string user)

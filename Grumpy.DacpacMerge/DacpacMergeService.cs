@@ -26,9 +26,9 @@ namespace Grumpy.DacpacMerge
 
             using (var package = _packageFactory.Create(inputDacpacFileName))
             {
-                var deploySchemas = schemas.Any() ? schemas.Select(s => s.Trim('[', ']')).ToArray() : package.Model.Schemas.ToArray();
+                var deploySchemas = schemas.Any() ? schemas.Select(s => s.Trim('[', ']')).ToList() : package.Model.Schemas.ToList();
 
-                _logger.Information($"Deploying Database Schemas {deploySchemas}");
+                _logger.Information("Deploying Database Schemas {@Schemas}", deploySchemas);
 
                 using (var databaseModel = _modelFactory.Create(databaseSource, databaseName))
                 {
@@ -48,7 +48,12 @@ namespace Grumpy.DacpacMerge
                     databaseModel.AddObjects(deployObjects, schemaOwnerUser);
 
                     package.Model = databaseModel;
-                    package.Save(outputDacpacFileName ?? inputDacpacFileName);
+
+                    var fileName = outputDacpacFileName ?? inputDacpacFileName;
+                    
+                    package.Save(fileName);
+
+                    _logger.Information("New Data-tier Application Package file saved {FileName}", fileName);
                 }
             }
         }

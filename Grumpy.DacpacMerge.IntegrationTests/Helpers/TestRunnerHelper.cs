@@ -33,7 +33,17 @@ namespace Grumpy.DacpacMerge.IntegrationTests.Helpers
             {
                 var dacServices = new DacServices(DatabaseHelper.ConnectionString(databaseName));
 
-                result = dacServices.Script(package, databaseName, new PublishOptions {GenerateDeploymentScript = true} );
+                var publishOptions = new PublishOptions
+                {
+                    GenerateDeploymentScript = true, 
+                    DeployOptions = new DacDeployOptions
+                    {
+                        DropObjectsNotInSource = true,
+                        IgnorePermissions = true
+                    }
+                };
+
+                result = dacServices.Script(package, databaseName, publishOptions);
             }
 
             File.Delete(fileName);

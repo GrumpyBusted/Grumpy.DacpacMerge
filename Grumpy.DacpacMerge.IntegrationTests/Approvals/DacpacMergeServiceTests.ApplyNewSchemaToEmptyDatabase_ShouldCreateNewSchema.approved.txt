@@ -76,14 +76,6 @@ CREATE NONCLUSTERED INDEX [IX_Address_Name]
 
 
 GO
-PRINT N'Creating Permission...';
-
-
-GO
-GRANT CONNECT TO [TestUser];
-
-
-GO
 PRINT N'Update complete.';
 
 
