@@ -132,6 +132,16 @@ namespace Grumpy.DacpacMerge.IntegrationTests
         }
 
         [Fact]
+        public void DatabaseOptions_ShouldNotBeChanged()
+        {
+            DatabaseHelper.DeployDacpac("Database2", _databaseName);
+
+            var script = TestRunnerHelper.ExecuteTest("Database9", "", _databaseName);
+
+            Approvals.Verify(script);
+        }
+
+        [Fact]
         public void ApplyWithChangedItemOutsideSchema_ShouldChangeItem()
         {
             DatabaseHelper.DeployDacpac("Database2", _databaseName);

@@ -78,6 +78,7 @@
     <Content Include="Approvals\DacpacMergeServiceTests.ApplyWithFunction_ShouldAddFunction.approved.txt" />
     <Content Include="Approvals\DacpacMergeServiceTests.ApplyWithPostDeploymentScript_ShouldAddPostDeployScript.approved.txt" />
     <Content Include="Approvals\DacpacMergeServiceTests.ApplyWithRole_ShouldAddRole.approved.txt" />
+    <Content Include="Approvals\DacpacMergeServiceTests.DatabaseOptions_ShouldNotBeChanged.approved.txt" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
