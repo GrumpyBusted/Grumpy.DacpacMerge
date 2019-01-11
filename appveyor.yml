@@ -34,8 +34,5 @@ artifacts:
   - path: '**\*.nupkg'
     name: NuGet
 deploy:
-  provider: NuGet
-  api_key:
-    secure: EqocuRN+dPLo43f6XC9SZIry4fYwoAibK7wTAte9Rrbc4Xl/OyWhGo75yv3/Rs+/
-  skip_symbols: false
-  artifact: /.*\.nupkg/
+  provider: Environment
+  name: NuGet
