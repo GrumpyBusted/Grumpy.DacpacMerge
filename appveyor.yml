@@ -1,35 +1,24 @@
-version: 1.1.{build}
+version: 3.0.{build}
 skip_commits:
   message: /NO-BUILD/
   files:
     - docs/*
     - 'LICENSE'
     - 'README.md'
-assembly_info:
-  patch: true
-  file: '**\AssemblyInfo.cs'
-  assembly_version: '{version}'
-  assembly_file_version: '{version}'
+image: Visual Studio 2019
 before_build:
-  - ps: nuget restore
-image: Visual Studio 2017
-configuration: Release
-build:
-  parallel: true 
-  verbosity: minimal
-test:
-  assemblies:
-    only:
-      - '**\bin\**\*.UnitTests.dll'
+  - ps: dotnet restore --no-cache --verbosity=normal
+build_script:
+  - ps: dotnet build --no-restore --configuration="release" -p:Version="$env:APPVEYOR_BUILD_VERSION"
+after_build:
+  - ps: dotnet pack Grumpy.DacpacMerge/Grumpy.DacpacMerge.csproj --no-build --include-symbols --include-source --verbosity=normal -p:PackageVersion="$env:APPVEYOR_BUILD_VERSION" --configuration="release"
 test_script:
-  - cmd: "\"%USERPROFILE%\\.nuget\\packages\\OpenCover\\4.6.519\\tools\\OpenCover.Console.exe\" -register:user -target:\"%xunit20%\\xunit.console.x86.exe\" -targetargs:\"Grumpy.DacpacMerge.UnitTests\\bin\\Release\\Grumpy.DacpacMerge.UnitTests.dll Grumpy.DacpacMerge.IntegrationTests\\bin\\Release\\Grumpy.DacpacMerge.IntegrationTests.dll -noshadow\" -output:\"coverage.xml\" -filter:\"+[Grumpy.DacpacMerge*]* -[Grumpy.DacpacMerge.UnitTests*;Grumpy.DacpacMerge.IntegrationTests*]*\""
+  - cmd: "\"%USERPROFILE%\\.nuget\\packages\\OpenCover\\4.7.922\\tools\\OpenCover.Console.exe\" -register:user -oldStyle -target:\"%ProgramFiles%\\dotnet\\dotnet.exe\" -targetargs:\"test Grumpy.Common.UnitTests\\Grumpy.DacpacMerge.UnitTests.csproj\" -output:\"coverage.xml\" -filter:\"+[Grumpy.DacpacMerge*]* -[Grumpy.DacpacMerge.UnitTests*]*\""
 after_test:
   - ps: |
       $env:PATH = 'C:\msys64\usr\bin;' + $env:PATH
       Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
       bash codecov.sh -f "coverage.xml" -t 502e368a-6011-4c87-9f61-e67cc5a9b6ac
-after_build:
-  - ps: nuget pack Grumpy.DacpacMerge\bin\Release\Grumpy.DacpacMerge.nuspec -Version $env:APPVEYOR_BUILD_VERSION
 artifacts:
   - path: '**\*.nupkg'
     name: NuGet
