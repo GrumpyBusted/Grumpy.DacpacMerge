@@ -25,7 +25,7 @@
     <PackageReference Include="Grumpy.Common" Version="3.0.18" />
     <PackageReference Include="Grumpy.Logging" Version="3.0.3" />
     <PackageReference Include="Microsoft.SqlServer.DacFx.x64" Version="150.4384.2" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.6.1" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
     <PackageReference Include="System.IO.Packaging" Version="4.5.0" />
   </ItemGroup>
 
